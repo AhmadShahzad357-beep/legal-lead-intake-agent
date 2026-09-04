@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intake Command Center</title>
+  <style>
+    :root { --ink:#18212b; --muted:#66717d; --line:#dce3e8; --paper:#ffffff; --canvas:#f5f7f8; --teal:#087f70; --teal-soft:#e1f3ee; --coral:#c94f38; --coral-soft:#fde9e4; --gold:#9b6708; --gold-soft:#fff2d9; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--canvas); color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; font-size:14px; }
+    .shell { max-width:1440px; margin:0 auto; padding:32px clamp(18px,4vw,56px) 48px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:20px; padding-bottom:26px; border-bottom:1px solid var(--line); }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .brand-mark { width:35px; height:35px; display:grid; place-items:center; background:var(--ink); color:#fff; font-size:17px; font-weight:700; }
+    h1 { margin:0; font-size:20px; line-height:1.2; font-weight:700; letter-spacing:0; }
+    .subtle { color:var(--muted); font-size:13px; margin-top:3px; }
+    .live { display:flex; align-items:center; gap:8px; color:var(--teal); font-weight:650; white-space:nowrap; }
+    .live-dot { width:8px; height:8px; border-radius:50%; background:#16a085; box-shadow:0 0 0 4px #d9f2eb; }
+    .headline { display:flex; justify-content:space-between; align-items:end; gap:16px; padding:32px 0 20px; }
+    .headline h2 { font-size:26px; margin:0; letter-spacing:0; }
+    .headline p { margin:6px 0 0; color:var(--muted); }
+    .updated { color:var(--muted); font-size:12px; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .metric { background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:17px; min-height:106px; }
+    .metric-label { display:block; color:var(--muted); font-size:12px; font-weight:650; }
+    .metric-value { display:block; margin-top:13px; font-size:30px; line-height:1; font-weight:720; }
+    .metric-note { display:block; margin-top:8px; color:var(--muted); font-size:12px; }
+    .workspace { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:18px; margin-top:18px; }
+    .panel { background:var(--paper); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+    .panel-head { display:flex; justify-content:space-between; align-items:center; min-height:61px; padding:0 20px; border-bottom:1px solid var(--line); }
+    .panel-head h3 { margin:0; font-size:15px; }
+    .count { padding:4px 8px; background:#eef2f4; color:var(--muted); border-radius:999px; font-size:12px; font-weight:650; }
+    table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    th { padding:12px 20px; color:var(--muted); background:#fafbfb; text-align:left; text-transform:uppercase; font-size:10px; letter-spacing:.06em; }
+    td { padding:16px 20px; border-top:1px solid var(--line); vertical-align:top; }
+    .lead-name { display:block; font-weight:700; }
+    .lead-contact, .case-summary { display:block; color:var(--muted); font-size:12px; margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .case-summary { white-space:normal; line-height:1.45; }
+    .tag { display:inline-flex; align-items:center; min-height:24px; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+    .tag.high { color:var(--coral); background:var(--coral-soft); } .tag.medium { color:var(--gold); background:var(--gold-soft); } .tag.low { color:var(--teal); background:var(--teal-soft); }
+    .status-list { padding:0; margin:0; list-style:none; }
+    .status-item { display:flex; justify-content:space-between; gap:8px; padding:15px 20px; border-top:1px solid var(--line); }
+    .status-label { color:var(--muted); font-size:12px; }
+    .state { font-size:12px; font-weight:700; color:var(--teal); } .state.error { color:var(--coral); } .state.test_mode { color:var(--gold); }
+    .empty { padding:64px 20px; text-align:center; color:var(--muted); }
+    .empty strong { display:block; margin-bottom:6px; color:var(--ink); font-size:15px; }
+    @media (max-width:900px) { .workspace { grid-template-columns:1fr; } .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } th:nth-child(3), td:nth-child(3) { display:none; } }
+    @media (max-width:560px) { .shell { padding:20px 14px 32px; } header { align-items:flex-start; } .live { font-size:12px; } .headline h2 { font-size:22px; } .metrics { gap:8px; } .metric { padding:14px; min-height:96px; } .metric-value { font-size:26px; } th, td { padding-left:14px; padding-right:14px; } th:nth-child(4), td:nth-child(4) { display:none; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand"><div class="brand-mark">I</div><div><h1>Intake Command Center</h1><div class="subtle">Legal lead response operations</div></div></div>
+      <div class="live"><span class="live-dot"></span>Webhook monitoring active</div>
+    </header>
+    <section class="headline"><div><h2>Live lead activity</h2><p>New form, call, and LSA leads appear here as they are processed.</p></div><div class="updated" id="updated">Connecting...</div></section>
+    <section class="metrics" aria-label="Lead metrics">
+      <article class="metric"><span class="metric-label">Leads received</span><strong class="metric-value" id="total">0</strong><span class="metric-note">Since server started</span></article>
+      <article class="metric"><span class="metric-label">High priority</span><strong class="metric-value" id="high">0</strong><span class="metric-note">Needs immediate follow-up</span></article>
+      <article class="metric"><span class="metric-label">CRM recorded</span><strong class="metric-value" id="crm">0</strong><span class="metric-note">HubSpot contact saved</span></article>
+      <article class="metric"><span class="metric-label">WhatsApp delivered</span><strong class="metric-value" id="sms">0</strong><span class="metric-note">Prospect auto-replies</span></article>
+    </section>
+    <section class="workspace">
+      <section class="panel"><div class="panel-head"><h3>Recent leads</h3><span class="count" id="lead-count">0 leads</span></div><div id="lead-table"></div></section>
+      <aside class="panel"><div class="panel-head"><h3>Latest processing</h3></div><ul class="status-list" id="status-list"><li class="empty"><strong>Waiting for a lead</strong>Submit a form or run the test lead script.</li></ul></aside>
+    </section>
+  </main>
+  <script>
+    const actionNames = {save_lead_to_crm:'CRM', notify_team:'Team alert', send_auto_reply:'WhatsApp reply'};
+    const escapeHtml = value => String(value || '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    const statusClass = status => status === 'error' ? 'error' : status === 'test_mode' ? 'test_mode' : '';
+    function render(data) {
+      document.getElementById('total').textContent = data.stats.total;
+      document.getElementById('high').textContent = data.stats.high_priority;
+      document.getElementById('crm').textContent = data.stats.crm_saved;
+      document.getElementById('sms').textContent = data.stats.messages_sent;
+      document.getElementById('lead-count').textContent = `${data.leads.length} lead${data.leads.length === 1 ? '' : 's'}`;
+      document.getElementById('updated').textContent = `Updated ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+      const table = document.getElementById('lead-table');
+      if (!data.leads.length) { table.innerHTML = '<div class="empty"><strong>No leads received yet</strong>Run <code>python test_lead.py</code> to populate this dashboard.</div>'; return; }
+      table.innerHTML = `<table><thead><tr><th style="width:24%">Lead</th><th style="width:23%">Case assessment</th><th style="width:31%">AI summary</th><th style="width:12%">Priority</th><th style="width:10%">Received</th></tr></thead><tbody>${data.leads.map(lead => `<tr><td><span class="lead-name">${escapeHtml(lead.name)}</span><span class="lead-contact">${escapeHtml(lead.phone || lead.email || 'No contact details')}</span></td><td><span class="lead-name">${escapeHtml(lead.practice_area)}</span><span class="lead-contact">${escapeHtml(lead.source)} · ${escapeHtml(lead.incident_date)}</span></td><td><span class="case-summary">${escapeHtml(lead.summary)}</span></td><td><span class="tag ${escapeHtml(lead.urgency)}">${escapeHtml(lead.urgency)}</span></td><td><span class="lead-contact">${escapeHtml(lead.received_at)}</span></td></tr>`).join('')}</tbody></table>`;
+      const latest = data.leads[0];
+      document.getElementById('status-list').innerHTML = Object.entries(latest.actions).map(([action, status]) => `<li class="status-item"><span><strong>${actionNames[action] || action}</strong><span class="status-label">${escapeHtml(latest.name)}</span></span><span class="state ${statusClass(status)}">${escapeHtml(status).replace('_',' ')}</span></li>`).join('');
+    }
+    async function refresh() { try { const response = await fetch('/api/dashboard'); render(await response.json()); } catch { document.getElementById('updated').textContent = 'Dashboard unavailable'; } }
+    refresh(); setInterval(refresh, 5000);
+  </script>
+</body>
+</html>
