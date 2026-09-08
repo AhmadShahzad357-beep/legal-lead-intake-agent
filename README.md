@@ -4,8 +4,6 @@
 
 An autonomous AI agent that captures, qualifies, and responds to law firm leads in real time.
 
-[Report an Issue](#) · [Documentation](#)
-
 </div>
 
 ## Overview
@@ -42,12 +40,6 @@ Unlike a traditional automation script, no part of this system follows a fixed, 
 
 <p align="center">
   <img src="docs/architecture.svg" alt="System architecture diagram of the Legal Lead Intake Agent" width="100%">
-</p>
-
-## Application Preview
-
-<p align="center">
-  <img src="docs/screenshot-dashboard.png" alt="Intake Command Center dashboard screenshot" width="100%">
 </p>
 
 ## Conclusion
