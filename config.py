@@ -25,14 +25,12 @@ HUBSPOT_API_KEY = os.getenv("HUBSPOT_API_KEY", "")
 # --- Slack (team notification ke liye) ---
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", "")
 
-
-
 # --- Meta WhatsApp Cloud API (prospect ko auto-reply ke liye) ---
 WHATSAPP_ACCESS_TOKEN = os.getenv("WHATSAPP_ACCESS_TOKEN", "")
 WHATSAPP_PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID", "")
-WHATSAPP_TEMPLATE_NAME = os.getenv("WHATSAPP_TEMPLATE_NAME", "jaspers_market_plain_text_v1")
+WHATSAPP_API_VERSION = os.getenv("WHATSAPP_API_VERSION", "v25.0")
+WHATSAPP_TEMPLATE_NAME = os.getenv("WHATSAPP_TEMPLATE_NAME", "lead_intake_auto_reply")
 WHATSAPP_TEMPLATE_LANGUAGE = os.getenv("WHATSAPP_TEMPLATE_LANGUAGE", "en_US")
-WHATSAPP_API_VERSION = os.getenv("WHATSAPP_API_VERSION", "v21.0")
 
 # --- Webhook security ---
 # Yeh secret query param (?secret=...) se match hona chahiye, warna
@@ -41,7 +39,7 @@ WHATSAPP_API_VERSION = os.getenv("WHATSAPP_API_VERSION", "v21.0")
 WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "")
 
 # --- Test mode ---
-# Agar TEST_MODE True hai, to koi real SMS/Slack nahi jayega,
+# Agar TEST_MODE True hai, to koi real WhatsApp/Slack message nahi jayega,
 # bas console mein print hoga. Isse aap bina paid accounts ke poora
 # system test kar sakte hain.
-TEST_MODE = os.getenv("TEST_MODE", "False").lower() == "true"
+TEST_MODE = os.getenv("TEST_MODE", "true").lower() in ("true", "1", "yes", "on")

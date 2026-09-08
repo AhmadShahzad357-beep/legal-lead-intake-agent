@@ -1,78 +1,55 @@
+<div align="center">
+
 # Legal Lead Intake Agent
 
-An AI agent that receives new law-firm leads (website form, phone call
-transcript, or Google LSA notification), classifies the case using an
-LLM with tool-calling, saves it to HubSpot CRM, alerts the intake team
-on Slack, and sends the prospect an instant WhatsApp auto-reply — end
-to end, with no human in the loop.
+An autonomous AI agent that captures, qualifies, and responds to law firm leads in real time.
 
-This is a **true agent**, not a fixed script: the LLM is given three
-tools and decides for itself which ones to call, in what order, and
-with what data. Nothing about "classify → CRM → Slack → WhatsApp" is
-hardcoded — the loop in `agent.py` lets the model call one tool, read
-the result, and choose its next step on its own.
+[Report an Issue](#) · [Documentation](#)
 
-## Architecture
+</div>
 
-<img src="docs/architecture.svg" alt="Architecture diagram" width="700"/>
+## Overview
 
-**Flow in words:**
-1. A lead comes in as a webhook `POST` to `/webhook/lead?secret=...`
-   (from a website form, CallRail, or Google LSA).
-2. `app.py` checks the shared secret, then normalises the payload and
-   pulls out Google Ads attribution (`gclid`, `utm_*`) if present.
-3. `agent.py` hands the lead's raw text to an LLM along with three
-   available tools.
-4. The LLM decides on its own which tools to call, in what order, and
-   with what arguments — reading each tool's result before choosing
-   its next step.
-5. Each tool call hits a real external API: `save_lead_to_crm`
-   (HubSpot), `notify_team` (Slack), `send_auto_reply` (WhatsApp via
-   Meta Cloud API).
-6. The final result is returned as JSON and recorded for the live
-   dashboard (`/`).
+The Legal Lead Intake Agent is a true tool-calling AI agent built for personal injury and family law firms. When a new lead arrives — from a website form, a tracked phone call, or a Google Local Services Ad — the agent reads the lead's message, decides how to classify it, and autonomously calls the tools it needs (CRM logging, team notification, and prospect auto-reply) in whatever order the situation requires.
 
-## Project structure
+Unlike a traditional automation script, no part of this system follows a fixed, hardcoded sequence. The language model is given a set of tools and decides — on every single lead — which ones to call, in what order, and with what data.
 
-\```
-app.py                Flask webhook + dashboard routes
-agent.py               The agent loop: LLM + tool calling
-config.py               Loads all settings from .env
-tools/
-  definitions.py         Tool schemas the LLM sees
-  crm.py                 HubSpot integration
-  notifier.py             Slack integration
-  responder.py            WhatsApp (Meta Cloud API) integration
-templates/
-  dashboard.html           Live activity dashboard UI
-docs/
-  architecture.svg          Diagram used in this README
-test_lead.py             Sends sample leads for local testing
-\```
+## Problem & Our Solution
 
-## Setup
+**The problem:** Law firms lose high-value leads every day simply because of response speed. Prospects contacting multiple firms at once typically sign with whichever firm replies first. Manual intake also means inconsistent CRM data, missed high-urgency cases, and intake staff finding out about a new lead minutes or hours after it arrived.
 
-1. Install dependencies: `pip install -r requirements.txt`
-2. Copy `.env.example` to `.env` and fill in your API keys.
-3. In HubSpot, create Contact properties: `practice_area`,
-   `incident_date`, `key_details`, `lead_urgency`, plus `source`,
-   `gclid`, `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`,
-   `utm_content`.
-4. In Meta's WhatsApp Manager, create and get approval for a message
-   template matching `WHATSAPP_TEMPLATE_NAME`.
-5. Run: `python app.py`
-6. Test: `python test_lead.py`
-7. Dashboard: `http://127.0.0.1:5000/`
+**Our solution:** An always-on agent that:
 
-## Deploying
+- Reads and understands a lead's message the moment it arrives
+- Classifies the practice area and extracts key case facts automatically
+- Logs a clean, structured contact record to the CRM without exception
+- Alerts the intake team instantly for urgent cases
+- Sends a reassuring first reply to the prospect within seconds, before they contact a competing firm
 
-Ships with a `Procfile` for Railway. Push to GitHub, create a Railway
-project from the repo, add your `.env` variables in Railway's
-"Variables" tab, then point the client's webhook config at:
-`https://your-app.up.railway.app/webhook/lead?secret=YOUR_SECRET`
+## Key Features & What Makes This Different
 
-## A note on compliance
+| Feature | Description |
+|---|---|
+| Genuine agentic architecture | The LLM is handed real callable tools and decides the execution path itself — nothing is pre-scripted |
+| Multi-channel intake | Normalizes payloads from website forms, CallRail transcripts, and LSA notifications into one pipeline |
+| CRM auto-attribution | Maps UTM parameters and Google Click ID (GCLID) directly onto the created contact |
+| Urgency-aware alerts | High-priority cases (e.g. active injury, time-sensitive filings) are flagged and pushed to the team immediately |
+| Compliant auto-reply | Prospect messaging uses a Meta-approved template — the LLM decides whether to send, but never rewrites the approved wording |
+| Live operations dashboard | A real-time command center shows every lead, its classification, and the status of every downstream action |
+| Fault-tolerant by design | A failure in one tool (e.g. CRM downtime) never blocks the others — each action is logged and reported independently |
 
-Automated messaging to prospects is subject to consent rules (TCPA in
-the US, WhatsApp's business-messaging policy). Confirm wording and
-opt-in with the firm's compliance team before going live.
+## System Architecture
+
+<p align="center">
+  <img src="docs/architecture.svg" alt="System architecture diagram of the Legal Lead Intake Agent" width="100%">
+</p>
+
+## Application Preview
+
+<p align="center">
+  <img src="docs/screenshot-dashboard.png" alt="Intake Command Center dashboard screenshot" width="100%">
+</p>
+
+## Conclusion
+
+The Legal Lead Intake Agent replaces a slow, manual, and inconsistent intake process with a single autonomous agent that reads, reasons, and acts on every lead the moment it arrives. By putting real decision-making in the hands of the LLM rather than a rigid script, the system adapts naturally to incomplete leads, unusual case types, and edge cases that a fixed workflow would mishandle — while still logging every action for full visibility on the operations dashboard.
